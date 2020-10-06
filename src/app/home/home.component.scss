@@ -1,0 +1,146 @@
+@import "src/assets/variables.scss";
+$button-hover-color: #fff2;
+$button-active-color: #fff3;
+
+#timeline{
+  height: 80px;
+  width: 100%;
+  background-color: $timeline-bg-color;
+  border-radius: 10px;
+  box-shadow: 3px 3px 6px 0px #0002;
+}
+
+#timeline-label{
+  height: 50px;
+  width: 100%;
+  padding: 0 5px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.timeline-label-date{
+  font-weight: bold;
+  font-size: 25px;
+  align-self: end;
+}
+
+.timeline-label-button-container{
+  width: 100px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.timeline-label-button-container>div{
+  width: 50px;
+  height: 50px;
+  padding: 5px;
+  border-radius: 5px;
+  &:hover {
+    background-color: $button-hover-color;
+  }
+  &:active {
+    background-color: $button-active-color;
+  }
+}
+
+.timeline-label-button-container>div>img{
+  width: 40px;
+  height: 40px;
+}
+
+.activity-menu{
+  margin-top: 20px;
+  padding: 0 20px;
+  height: 80px;
+  box-shadow: 3px 3px 6px 0px #0002;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-name{
+  width: 40%;
+  font-weight: bold;
+  font-size: 30px;
+}
+
+.activity-timer{
+  min-width: 260px;
+  font-weight: bold;
+  font-size: 40px;
+  text-align: center;
+}
+
+.activity-buttons{
+  width: 40%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-buttons-left-fill{
+  width: 1px;
+}
+
+.start-stop-button{
+  width: 60px;
+  height: 60px;
+  padding: 5px;
+  border-radius: 5px;
+  &:hover {
+    background-color: $button-hover-color;
+  }
+  &:active {
+    background-color: $button-active-color;
+  }
+}
+
+.start-stop-button>img{
+  width: 50px;
+  height: 50px;
+}
+
+.activity-buttons-right-container{
+  width: 150px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.activity-buttons-right-container>div{
+  padding: 5px;
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  &:hover {
+    background-color: $button-hover-color;
+  }
+  &:active {
+    background-color: $button-active-color;
+  }
+}
+
+.activity-buttons-right-container>div>img{
+  width: 40px;
+  height: 40px;
+}
+
+.draw-button{
+
+}
+
+.metrics-button{
+
+}
+
+.options-button{
+
+}

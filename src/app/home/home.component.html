@@ -1,0 +1,33 @@
+<div id="timeline-label">
+  <div class="timeline-label-date">{{dateStr}}</div>
+  <div class="timeline-label-button-container">
+    <div class="erase-button">
+      <img src="../../assets/img/erase.svg" style="filter: invert(100%); max-width: 100%"/>
+    </div>
+    <div class="undo-button">
+      <img src="../../assets/img/undo.svg" style="filter: invert(100%); max-width: 100%"/>
+    </div>
+  </div>
+</div>
+<canvas id="timeline"></canvas>
+<div *ngFor="let activity of activities" class="activity-menu widget" style="background-color:{{activity.color}}">
+  <div class="activity-name">{{activity.name}}</div>
+  <div class="activity-timer">{{getActivityTime(activity) | time}}</div>
+  <div class="activity-buttons">
+    <div class="activity-buttons-left-fill"></div>
+    <div (click)="onStartStopButtonClicked(activity, $event)" class="start-stop-button">
+      <img [src]='this.timelineService.getActiveActivity() === activity ? "../../assets/img/pause.svg" : "../../assets/img/play.svg"' style="filter: invert(100%); max-width: 100%;">
+    </div>
+    <div class="activity-buttons-right-container">
+      <div class="draw-button">
+        <img src="../../assets/img/draw.svg" style="filter: invert(100%); max-width: 100%"/>
+      </div>
+      <div class="metrics-button">
+        <img src="../../assets/img/graph.svg" style="filter: invert(100%); max-width: 100%"/>
+      </div>
+      <div class="options-button">
+        <img src="../../assets/img/options.svg" style="filter: invert(100%); max-width: 100%"/>
+      </div>
+    </div>
+  </div>
+</div>
