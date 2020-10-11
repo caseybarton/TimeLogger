@@ -1,13 +1,9 @@
 @import "src/assets/variables.scss";
-$button-hover-color: #fff2;
-$button-active-color: #fff3;
+
 
 #timeline{
   height: 80px;
   width: 100%;
-  background-color: $timeline-bg-color;
-  border-radius: 10px;
-  box-shadow: 3px 3px 6px 0px #0002;
 }
 
 #timeline-label{
@@ -44,6 +40,7 @@ $button-active-color: #fff3;
   }
   &:active {
     background-color: $button-active-color;
+    transform: scale(0.95);
   }
 }
 
@@ -99,6 +96,7 @@ $button-active-color: #fff3;
   }
   &:active {
     background-color: $button-active-color;
+    transform: scale(0.95);
   }
 }
 
@@ -125,6 +123,7 @@ $button-active-color: #fff3;
   }
   &:active {
     background-color: $button-active-color;
+    transform: scale(0.95);
   }
 }
 
@@ -133,14 +132,40 @@ $button-active-color: #fff3;
   height: 40px;
 }
 
-.draw-button{
+#timeline-container{
 
 }
 
-.metrics-button{
-
+#prev-day-button{
+  width: 20px;
+  height: 80px;
+  position: absolute;
+  left: 2vw;
+  align-self: center;
+  display: grid;
+  align-items: center;
+  opacity: 6%;
+  &:hover {
+    opacity: 100%
+  }
+  &:active {
+    transform: scale(0.95)
+  }
 }
 
-.options-button{
-
+#next-day-button{
+  width: 20px;
+  height: 80px;
+  position: absolute;
+  right: 2vw;
+  align-self: center;
+  display: grid;
+  align-items: center;
+  opacity: 6%;
+  &:hover {
+    opacity: 100%
+  }
+  &:active {
+    transform: scale(0.95)
+  }
 }

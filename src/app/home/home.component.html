@@ -9,7 +9,16 @@
     </div>
   </div>
 </div>
-<canvas id="timeline"></canvas>
+<div id="timeline-container">
+  <div id="prev-day-button" (click)="onPrevDayButtonClicked($event)">
+    <img src="../../assets/img/wide-arrow.svg" style="filter: invert(100%); max-width: 100%; transform: scaleX(-1)"/>
+  </div>
+  <div id="next-day-button" (click)="onNextDayButtonClicked($event)">
+    <img src="../../assets/img/wide-arrow.svg" style="filter: invert(100%); max-width: 100%"/>
+  </div>
+<app-timeline id="timeline" [startTime]="timelineRangeStart" [endTime]="timelineRangeEnd">
+</app-timeline>
+</div>
 <div *ngFor="let activity of activities" class="activity-menu widget" style="background-color:{{activity.color}}">
   <div class="activity-name">{{activity.name}}</div>
   <div class="activity-timer">{{getActivityTime(activity) | time}}</div>
