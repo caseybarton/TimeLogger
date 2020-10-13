@@ -8,7 +8,7 @@ import {TimelineComponent} from '../timeline/timeline.component';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, AfterViewInit, OnChanges, OnDestroy {
+export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public activities: Activity[];
   public dateStr = '';
   public timelineRangeStart = 0;    // 1595721600000 1595808000000
