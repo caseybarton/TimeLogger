@@ -14,6 +14,8 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public timelineRangeStart = 0;    // 1595721600000 1595808000000
   public timelineRangeEnd = 0;
   public redrawTimeline: () => void;
+  public timelineEditMode = false;
+  public timelineEditActivity: Activity = null;
   private timelineRedrawInterval: Subscription;
 
   @ViewChild(TimelineComponent)
@@ -42,6 +44,27 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   ngOnDestroy(): void {
     this.timelineRedrawInterval.unsubscribe();
+  }
+
+  onEraseClicked(): void {
+    if (this.timelineEditMode === true && this.timelineEditActivity === null) { // if already in erase mode
+      this.timelineEditMode = false;
+      this.timelineEditActivity = null;
+    }else{
+      this.timelineEditMode = true;
+      this.timelineEditActivity = null;
+    }
+  }
+
+  onDrawClicked(activity: Activity): void {
+    // if already in draw mode for this activity
+    if (this.timelineEditMode === true && this.timelineEditActivity === activity){
+      this.timelineEditMode = false;
+      this.timelineEditActivity = null;
+    }else{
+      this.timelineEditMode = true;
+      this.timelineEditActivity = activity;
+    }
   }
 
   onPrevDayButtonClicked(event): void {

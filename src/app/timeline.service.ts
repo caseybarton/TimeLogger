@@ -150,6 +150,15 @@ export class TimelineService {
     return this.activities;
   }
 
+
+  eraseIntervals(intervalStart: number, intervalEnd: number): void {
+    console.log(`erase interval: ${intervalStart},${intervalEnd}`);
+  }
+
+  addInterval(activity: Activity, intervalStart: number, intervalEnd: number): void {
+    console.log(`add interval: ${activity.name},${intervalStart},${intervalEnd}`);
+  }
+
 }
 
 export interface Activity {
