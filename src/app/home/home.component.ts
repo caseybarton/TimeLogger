@@ -39,7 +39,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   }
 
   ngAfterViewInit(): void {
-    this.redrawTimeline = this.timelineComponent.redraw;
+    this.redrawTimeline = (event = null) => {this.timelineComponent.redraw(event); };
   }
 
   ngOnDestroy(): void {

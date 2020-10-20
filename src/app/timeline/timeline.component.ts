@@ -23,8 +23,9 @@ export class TimelineComponent implements OnInit, OnChanges {
     this._editActivity = editActivity;
     this.selectionStarted = false;
   }
-
+  // tslint:disable-next-line:variable-name
   private _editActivity: Activity = null;
+
   private displayedStartTime: number;
   private displayedEndTime: number;
   private transitionAnimationDuration = 500;

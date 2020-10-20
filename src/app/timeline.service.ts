@@ -55,7 +55,6 @@ export class TimelineService {
         ]
       }
     ];
-
     // sort intervals into a sorted map for efficient retrieval
     for (const i of input){
       const activity = {name: i.name, color: i.color};
@@ -74,6 +73,33 @@ export class TimelineService {
         }
       }
     }
+  }
+
+  exportJson(): string {
+    const intervalsArray = Array.from(this.intervalsMap.between({}));
+    return JSON.stringify(intervalsArray);
+  }
+
+  private example = [
+    [1595716600000,{"startTime":1595716600000,"endTime":1595721600000,"activity":{"name":"running","color":"pink"}}]
+    ,[1595726600000,{"startTime":1595726600000,"endTime":1595731600000,"activity":{"name":"running","color":"pink"}}],[1595731600000,{"startTime":1595731600000,"endTime":1595735600000,"activity":{"name":"swimming","color":"orange"}}],[1595807000000,{"startTime":1595807000000,"endTime":1595817000000,"activity":{"name":"sleeping","color":"grey"}}]];
+
+  importJson(json: string): void {
+    const intervals = JSON.parse(json);
+    const newIntervalsMap = new BinMap<number, Interval>();
+    let activeInterval: Interval = null;
+    for (const kv of intervals) {
+      const key: number = kv[0];
+      const interval: Interval = kv[1];
+      if (!interval.endTime) {// active interval is separate from intervals list
+        console.assert(!activeInterval, `ERROR: Multiple active intervals read from input! Previous interval: ${activeInterval}, New interval: ${interval}`);
+        this.activeInterval = activeInterval = interval;
+      }else{
+        newIntervalsMap.set(key, interval);
+      }
+    }
+    this.intervalsMap = newIntervalsMap;
+    console.log(`new intervals map = ${this.exportJson()}`);
   }
 
   toggleActiveActivity(activity: Activity): void {
