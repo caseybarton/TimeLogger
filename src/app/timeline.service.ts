@@ -19,60 +19,8 @@ export class TimelineService {
   }
 
   syncWithServer(): void {
-    const input = [
-      {
-        name: 'running',
-        color: 'pink',
-        intervals: [
-          {
-            startTime: 1595726600000,
-            endTime: 1595731600000
-          },
-          {
-            startTime: 1595716600000,
-            endTime: 1595721600000
-          }
-        ]
-      },
-      {
-        name: 'swimming',
-        color: 'orange',
-        intervals: [
-          {
-            startTime: 1595731600000,
-            endTime: 1595735600000
-          }
-        ]
-      },
-      {
-        name: 'sleeping',
-        color: 'grey',
-        intervals: [
-          {
-            startTime: 1595807000000,
-            endTime: 1595817000000
-          }
-        ]
-      }
-    ];
-    // sort intervals into a sorted map for efficient retrieval
-    for (const i of input){
-      const activity = {name: i.name, color: i.color};
-      let activeInterval: any;
-      this.activities.push(activity);
-      for (const j of i.intervals){
-        if (!j.endTime) { // active interval is separate from intervals list
-          console.assert(!activeInterval, `ERROR: Multiple active intervals read from input! Previous interval: ${activeInterval}, New interval: ${j}`);
-          this.activeInterval = {startTime: j.startTime, endTime: null, activity};
-          activeInterval = j;
-        } else {
-          this.intervalsMap.set(
-            j.startTime,
-            {startTime: j.startTime, endTime: j.endTime, activity}
-          );
-        }
-      }
-    }
+    const exampleData = '[[1595716600000,{"startTime":1595716600000,"endTime":1595721600000,"activity":{"name":"running","color":"pink"}}],[1595726600000,{"startTime":1595726600000,"endTime":1595731600000,"activity":{"name":"running","color":"pink"}}],[1595731600000,{"startTime":1595731600000,"endTime":1595735600000,"activity":{"name":"swimming","color":"orange"}}],[1595807000000,{"startTime":1595807000000,"endTime":1595817000000,"activity":{"name":"sleeping","color":"grey"}}]]';
+    this.importJson(exampleData);
   }
 
   exportJson(): string {
@@ -80,17 +28,17 @@ export class TimelineService {
     return JSON.stringify(intervalsArray);
   }
 
-  private example = [
-    [1595716600000,{"startTime":1595716600000,"endTime":1595721600000,"activity":{"name":"running","color":"pink"}}]
-    ,[1595726600000,{"startTime":1595726600000,"endTime":1595731600000,"activity":{"name":"running","color":"pink"}}],[1595731600000,{"startTime":1595731600000,"endTime":1595735600000,"activity":{"name":"swimming","color":"orange"}}],[1595807000000,{"startTime":1595807000000,"endTime":1595817000000,"activity":{"name":"sleeping","color":"grey"}}]];
-
   importJson(json: string): void {
     const intervals = JSON.parse(json);
     const newIntervalsMap = new BinMap<number, Interval>();
+    const newActivities: Activity[] = [];
     let activeInterval: Interval = null;
     for (const kv of intervals) {
       const key: number = kv[0];
       const interval: Interval = kv[1];
+      if (!newActivities.find(activity => activity.name === interval.activity.name)){
+        newActivities.push(interval.activity);
+      }
       if (!interval.endTime) {// active interval is separate from intervals list
         console.assert(!activeInterval, `ERROR: Multiple active intervals read from input! Previous interval: ${activeInterval}, New interval: ${interval}`);
         this.activeInterval = activeInterval = interval;
@@ -99,6 +47,7 @@ export class TimelineService {
       }
     }
     this.intervalsMap = newIntervalsMap;
+    this.activities = newActivities;
     console.log(`new intervals map = ${this.exportJson()}`);
   }
 
