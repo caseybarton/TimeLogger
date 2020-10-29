@@ -81,15 +81,14 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       .format(new Date(this.timelineRangeStart));
   }
 
-
   onStartStopButtonClicked(activity, event): void {
     this.timelineService.toggleActiveActivity(activity);
-    const target = event.target.tagName === 'IMG' ? event.target : event.target.children[0];
     this.redrawTimeline();
   }
 
   private activityPrevTimes = new Map();
   getActivityTime(activity): number{
+    window.myLog = this.timelineService.getIntervalsOfActivity(activity);
     const time = this.timelineService.getIntervalsSum(this.timelineService.getIntervalsOfActivity(activity));
     let ret = time;
     let prevTime;
@@ -110,3 +109,4 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     return ret;
   }
 }
+

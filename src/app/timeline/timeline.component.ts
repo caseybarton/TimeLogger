@@ -238,11 +238,17 @@ export class TimelineComponent implements OnInit, OnChanges {
 
     if (event.type === 'mousedown'){
       if (this.selectionStarted){
-        const selectionEndTime = this.pixelToTime(x);
+        let selectionTimeLeft = this.selectionStartTime;
+        let selectionTimeRight = this.pixelToTime(x);
+        if (selectionTimeLeft > selectionTimeRight){
+          const temp = selectionTimeLeft;
+          selectionTimeLeft = selectionTimeRight;
+          selectionTimeRight = temp;
+        }
         if (!this._editActivity){
-          this.timelineService.eraseIntervals(this.selectionStartTime, selectionEndTime);
+          this.timelineService.eraseIntervals(selectionTimeLeft, selectionTimeRight);
         }else{
-          this.timelineService.addInterval(this._editActivity, this.selectionStartTime, selectionEndTime);
+          this.timelineService.addInterval({startTime: selectionTimeLeft, endTime: selectionTimeRight, activity: this._editActivity});
         }
         this.selectionStarted = false;
         this.selectionStartTime = 0;
@@ -250,6 +256,7 @@ export class TimelineComponent implements OnInit, OnChanges {
         this.selectionStarted = true;
         this.selectionStartTime = this.pixelToTime(x);
       }
+      this.redraw();
     }else if (this.selectionStarted){ // just hovering
       let selectionLeft = this.timeToPixel(this.selectionStartTime);
       let selectionRight = x;

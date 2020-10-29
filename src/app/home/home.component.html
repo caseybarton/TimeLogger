@@ -19,7 +19,7 @@
 <app-timeline id="timeline" [startTime]="timelineRangeStart" [endTime]="timelineRangeEnd" [editMode]="timelineEditMode" [editActivity]="timelineEditActivity">
 </app-timeline>
 </div>
-<div *ngFor="let activity of activities" class="activity-menu widget" style="background-color:{{activity.color}}">
+<div *ngFor="let activity of activities" class="activity-menu widget" [ngStyle]="{'background':'linear-gradient('+activity.color+','+activity.color+'),linear-gradient(white,white)'}">
   <div class="activity-name">{{activity.name}}</div>
   <div class="activity-timer">{{getActivityTime(activity) | time}}</div>
   <div class="activity-buttons">
