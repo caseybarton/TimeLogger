@@ -21,58 +21,65 @@ export class TimelineService {
   }
 
   syncWithServer(): void {
-    const exampleData = '[[1595716600000,{"startTime":1595716600000,"endTime":1595721600000,"activity":{"name":"running","color":"#FF0000AA"}}],[1595726600000,{"startTime":1595726600000,"endTime":1595731600000,"activity":{"name":"running","color":"#FF0000AA"}}],[1595731600000,{"startTime":1595731600000,"endTime":1595735600000,"activity":{"name":"swimming","color":"#FFAA00AA"}}],[1595807000000,{"startTime":1595807000000,"endTime":1595817000000,"activity":{"name":"sleeping","color":"#444444AA"}}]]';
+    const exampleData = '{"activities":[{"name":"running","color":"#FF0000AA"},{"name":"swimming","color":"#FFAA00AA"},{"name":"sleeping","color":"#444444AA"}],' +
+      '"intervals":[{"startTime":1595716600000,"endTime":1595721600000,"activityName":"running"},{"startTime":1595731600000,"endTime":1595735600000,"activityName":"swimming"}],' +
+      '"activeInterval":null}';
     this.importJson(exampleData);
   }
 
+  getActivityColor(activityName: string): string {
+    const activity = this.activities.find(e => e.name === activityName);
+    console.assert(!!activity, `ERROR: activity ${activityName} not found!`);
+    return activity.color;
+  }
+
   exportJson(): string {
-    const intervalsArray = Array.from(this.intervalsMap.between({}));
-    return JSON.stringify(intervalsArray);
+    const intervalsMap = Array.from(this.intervalsMap.between({}));
+    const intervalsArray = [];
+    for (const interval of intervalsMap){
+      intervalsArray.push(interval);
+    }
+    return JSON.stringify({activities: this.activities, intervals: intervalsArray, activeInterval: this.activeInterval});
   }
 
   importJson(json: string): void {
-    const intervals = JSON.parse(json);
+    const parsedJson = JSON.parse(json);
+    this.activities = parsedJson.activities;
+    const intervals: Interval[] = parsedJson.intervals;
+    this.activeInterval = parsedJson.activeInterval;
     const newIntervalsMap = new BinMap<number, Interval>();
-    const newActivities: Activity[] = [];
-    let activeInterval: Interval = null;
-    for (const kv of intervals) {
-      const key: number = kv[0];
-      const interval: Interval = kv[1];
-      if (!newActivities.find(activity => activity.name === interval.activity.name)){
-        newActivities.push(interval.activity);
-      }
-      if (!interval.endTime) {// active interval is separate from intervals list
-        console.assert(!activeInterval, `ERROR: Multiple active intervals read from input! Previous interval: ${activeInterval}, New interval: ${interval}`);
-        this.activeInterval = activeInterval = interval;
-      }else{
-        newIntervalsMap.set(key, interval);
-      }
+    for (const interval of intervals) {
+      newIntervalsMap.set(interval.startTime, interval);
     }
     this.intervalsMap = newIntervalsMap;
-    this.activities = newActivities;
-    // console.log(`new intervals map:`);
-    // console.log(this.exportJson());
+    console.log(`new intervals map:`);
+    console.log(this.exportJson());
   }
 
   toggleActiveActivity(activity: Activity): void {
     console.assert(!!this.activities.find(e => e === activity), `ERROR: activity not found in toggleActiveActivity(): ${activity}`);
 
+    // add the current interval
     if (this.activeInterval) {
       this.activeInterval.endTime = Date.now();
       this.addInterval(this.activeInterval);
     }
 
-    if (this.activeInterval && this.activeInterval.activity === activity) {
+    // switch or disable it
+    if (this.activeInterval && this.activeInterval.activityName === activity.name) {
       // toggle active
       this.activeInterval = null;
     } else {
       // new active activity
-      this.activeInterval = {startTime: Date.now(), endTime: null, activity};
+      this.activeInterval = {startTime: Date.now(), endTime: null, activityName: activity.name};
     }
   }
 
   getActiveActivity(): Activity {
-    return !!this.activeInterval && this.activeInterval.activity;
+    if (this.activeInterval){
+      return this.activities.find(e => e.name === this.activeInterval.activityName);
+    }
+    return null;
   }
 
   /**
@@ -106,7 +113,7 @@ export class TimelineService {
     const ret: Interval[] = [];
     const intervals = this.getIntervals(lowerBound, upperBound);
     for (const interval of intervals) {
-      if (interval.activity === activity) {
+      if (interval.activityName === activity.name) {
         ret.push(interval);
       }
     }
@@ -154,12 +161,12 @@ export class TimelineService {
         const leftNewInterval: Interval = {
           startTime: interval.startTime,
           endTime: from,
-          activity: interval.activity
+          activityName: interval.activityName
         };
         const rightNewInterval: Interval = {
           startTime: to,
           endTime: interval.endTime,
-          activity: interval.activity
+          activityName: interval.activityName
         };
         this.intervalsMap.set(leftNewInterval.startTime, leftNewInterval);
         this.intervalsMap.set(rightNewInterval.startTime, rightNewInterval);
@@ -171,7 +178,7 @@ export class TimelineService {
         const newInterval: Interval = {
           startTime: to,
           endTime: interval.endTime,
-          activity: interval.activity
+          activityName: interval.activityName
         };
         this.intervalsMap.set(newInterval.startTime, newInterval);
       }
@@ -182,7 +189,7 @@ export class TimelineService {
         const newInterval: Interval = {
           startTime: interval.startTime,
           endTime: from,
-          activity: interval.activity
+          activityName: interval.activityName
         };
         this.intervalsMap.set(newInterval.startTime, newInterval);
       }
@@ -226,5 +233,5 @@ export interface Activity {
 export interface Interval {
   startTime: number;
   endTime: number;
-  activity: Activity;
+  activityName: string;
 }

@@ -88,7 +88,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
 
   private activityPrevTimes = new Map();
   getActivityTime(activity): number{
-    window.myLog = this.timelineService.getIntervalsOfActivity(activity);
+    // window.myLog = this.timelineService.getIntervalsOfActivity(activity);
     const time = this.timelineService.getIntervalsSum(this.timelineService.getIntervalsOfActivity(activity));
     let ret = time;
     let prevTime;

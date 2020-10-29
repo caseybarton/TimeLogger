@@ -22,12 +22,16 @@ export class TimePipe implements PipeTransform {
     const hoursStr = hours === 0
       ? ''
       : `${hours}:`;
-    const minutesStr = minutes < 10
-      ? `0${minutes}:`
-      : `${minutes}:`;
-    const secondsStr = seconds < 10
-      ? `0${seconds}.`
-      : `${seconds}.`;
+    const minutesStr = (minutes === 0 && hours === 0)
+      ? ''
+      : minutes < 10
+        ? `0${minutes}:`
+        : `${minutes}:`;
+    const secondsStr = (seconds < 10 && minutes === 0 && hours === 0)
+      ? `${seconds}.`
+      : seconds < 10
+        ? `0${seconds}.`
+        : `${seconds}.`;
     const centisecondsStr = centiseconds < 10
       ? `0${centiseconds}`
       : `${centiseconds}`;

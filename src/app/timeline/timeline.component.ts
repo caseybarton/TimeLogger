@@ -10,7 +10,7 @@ export class TimelineComponent implements OnInit, OnChanges {
   @Input() startTime: number;
   @Input() endTime: number;
   @Input()
-  get editMode(): boolean {return this._editMode;}
+  get editMode(): boolean {return this._editMode; }
   set editMode(editMode: boolean){
     this._editMode = editMode;
     this.selectionStarted = false;
@@ -149,7 +149,7 @@ export class TimelineComponent implements OnInit, OnChanges {
 
   private drawFill(): void {
     for (const interval of this.intervals){
-      this.ctx.fillStyle = interval.activity.color;
+      this.ctx.fillStyle = this.timelineService.getActivityColor(interval.activityName);
       const intervalPixelStart = this.timeToPixel(interval.startTime);
       const intervalPixelEnd = this.timeToPixel(interval.endTime ? interval.endTime : Date.now());
       this.ctx.fillRect(
@@ -248,7 +248,9 @@ export class TimelineComponent implements OnInit, OnChanges {
         if (!this._editActivity){
           this.timelineService.eraseIntervals(selectionTimeLeft, selectionTimeRight);
         }else{
-          this.timelineService.addInterval({startTime: selectionTimeLeft, endTime: selectionTimeRight, activity: this._editActivity});
+          this.timelineService.addInterval(
+            {startTime: selectionTimeLeft, endTime: selectionTimeRight, activityName: this._editActivity.name}
+            );
         }
         this.selectionStarted = false;
         this.selectionStartTime = 0;
