@@ -49,22 +49,51 @@
   height: 40px;
 }
 
-.activity-menu{
+.activity-widget{
   margin-top: 20px;
   padding: 0 20px;
-  height: 80px;
   box-shadow: 3px 3px 6px 0px #0002;
   border-radius: 10px;
+}
+
+.activity-menu{
+  height: 80px;
   display: flex;
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
+  background-color: mediumpurple;
+}
+
+.activity-history{
+  height: 200px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: purple;
+}
+
+.activity-options{
+  height: 120px;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+  background-color: rebeccapurple;
 }
 
 .activity-name{
   width: 40%;
   font-weight: bold;
   font-size: 30px;
+  background-color: #00000000;
+  border:unset;
+  color:white;
+}
+
+.activity-name::placeholder{
+  color:white;
 }
 
 .activity-timer{
@@ -144,7 +173,7 @@
   align-self: center;
   display: grid;
   align-items: center;
-  opacity: 6%;
+  opacity: 12%;
   &:hover {
     opacity: 100%
   }
@@ -161,7 +190,7 @@
   align-self: center;
   display: grid;
   align-items: center;
-  opacity: 6%;
+  opacity: 12%;
   &:hover {
     opacity: 100%
   }

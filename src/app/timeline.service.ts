@@ -11,8 +11,7 @@ export class TimelineService {
   private activities: Activity[];
   private intervalsMap: BinMap<number, Interval>;
   private activeInterval: Interval = null;
-  private restorePoints: {activities: Activity[], intervalsMap: BinMap<number, Interval>, activeInterval: Interval}[];
-  private currentRestorePoint: number;
+  private restorePoints: { activities: Activity[], intervals: Interval[]}[];
 
   constructor() {
     this.activities = [];
@@ -21,25 +20,26 @@ export class TimelineService {
   }
 
   syncWithServer(): void {
-    const exampleData = '{"activities":[{"name":"running","color":"#FF0000AA"},{"name":"swimming","color":"#FFAA00AA"},{"name":"sleeping","color":"#444444AA"}],' +
-      '"intervals":[{"startTime":1595716600000,"endTime":1595721600000,"activityName":"running"},{"startTime":1595731600000,"endTime":1595735600000,"activityName":"swimming"}],' +
-      '"activeInterval":null}';
+    const exampleData = '{' +
+      '"activities":[{"id":0,"name":"running","color":"#FF0000AA"},{"id":1,"name":"swimming","color":"#FFAA00AA"},{"id":2,"name":"sleeping","color":"#444444AA"}],' +
+      '"intervals":[{"startTime":1595716600000,"endTime":1595721600000,"activityId":0},{"startTime":1595731600000,"endTime":1595735600000,"activityId":1}],' +
+      '"activeInterval":null, ' +
+      '"restorePoints":[]}';
     this.importJson(exampleData);
-  }
-
-  getActivityColor(activityName: string): string {
-    const activity = this.activities.find(e => e.name === activityName);
-    console.assert(!!activity, `ERROR: activity ${activityName} not found!`);
-    return activity.color;
   }
 
   exportJson(): string {
     const intervalsMap = Array.from(this.intervalsMap.between({}));
     const intervalsArray = [];
-    for (const interval of intervalsMap){
+    for (const interval of intervalsMap) {
       intervalsArray.push(interval);
     }
-    return JSON.stringify({activities: this.activities, intervals: intervalsArray, activeInterval: this.activeInterval});
+    return JSON.stringify({
+      activities: this.activities,
+      intervals: intervalsArray,
+      activeInterval: this.activeInterval,
+      restorePoints: this.restorePoints
+    });
   }
 
   importJson(json: string): void {
@@ -47,13 +47,14 @@ export class TimelineService {
     this.activities = parsedJson.activities;
     const intervals: Interval[] = parsedJson.intervals;
     this.activeInterval = parsedJson.activeInterval;
+    this.restorePoints = parsedJson.restorePoints;
     const newIntervalsMap = new BinMap<number, Interval>();
     for (const interval of intervals) {
       newIntervalsMap.set(interval.startTime, interval);
     }
     this.intervalsMap = newIntervalsMap;
-    console.log(`new intervals map:`);
-    console.log(this.exportJson());
+    // console.log(`new intervals map:`);
+    // console.log(this.exportJson());
   }
 
   toggleActiveActivity(activity: Activity): void {
@@ -66,18 +67,18 @@ export class TimelineService {
     }
 
     // switch or disable it
-    if (this.activeInterval && this.activeInterval.activityName === activity.name) {
+    if (this.activeInterval && this.activeInterval.activityId === activity.id) {
       // toggle active
       this.activeInterval = null;
     } else {
       // new active activity
-      this.activeInterval = {startTime: Date.now(), endTime: null, activityName: activity.name};
+      this.activeInterval = {startTime: Date.now(), endTime: null, activityId: activity.id};
     }
   }
 
   getActiveActivity(): Activity {
-    if (this.activeInterval){
-      return this.activities.find(e => e.name === this.activeInterval.activityName);
+    if (this.activeInterval) {
+      return this.activities.find(e => e.id === this.activeInterval.activityId);
     }
     return null;
   }
@@ -86,7 +87,7 @@ export class TimelineService {
    * Returns an array of the subset of intervals that start between lowerBound and upperBound sorted by startTime.
    * If no parameters are given, returns all intervals.
    */
-  getIntervals(lowerBound?: number, upperBound?: number): Array<Interval> {
+  getIntervals(lowerBound: number = null, upperBound: number = null, includeActiveInterval: boolean = true): Array<Interval> {
     const ret: Interval[] = [];
     const intervalsMap = (arguments[0] && arguments[1])
       ? Array.from(this.intervalsMap.between({ge: lowerBound, lt: upperBound}))
@@ -97,6 +98,7 @@ export class TimelineService {
       ret.push(kv[1]);
     }
     if (this.activeInterval
+      && includeActiveInterval
       && !(arguments[0] && this.activeInterval.startTime < lowerBound)
       && !(arguments[1] && this.activeInterval.startTime >= upperBound)
     ) {
@@ -113,7 +115,7 @@ export class TimelineService {
     const ret: Interval[] = [];
     const intervals = this.getIntervals(lowerBound, upperBound);
     for (const interval of intervals) {
-      if (interval.activityName === activity.name) {
+      if (interval.activityId === activity.id) {
         ret.push(interval);
       }
     }
@@ -135,38 +137,45 @@ export class TimelineService {
     return this.activities;
   }
 
-  eraseIntervals(from: number, to: number): void {
+  getActivity(id: number): Activity {
+    const activity = this.activities.find(e => e.id === id);
+    console.assert(!!activity, `ERROR: activity id:${id} not found!`);
+    return activity;
+  }
+
+  eraseIntervals(from: number, to: number, createRestorePoint: boolean = true): void {
     // console.log('intervals before erase:');
     // console.log(this.getIntervals());
     // console.log(`erasing intervals between: ${new Date(from).toUTCString()},${new Date(to).toUTCString()}`);
     const intervals = this.getIntervals();
-    for (const interval of intervals){
+    if (createRestorePoint) {this.createRestorePoint(); }
+    for (const interval of intervals) {
       // five possibilities:
       // no overlap
-      if (interval.startTime >= to || interval.endTime <= from){
+      if (interval.startTime >= to || interval.endTime <= from) {
         // console.log(`erase case 1`);
         continue;
       }
       // envelopes the interval
-      if (from <= interval.startTime && interval.endTime <= to){
+      if (from <= interval.startTime && interval.endTime <= to) {
         // console.log(`erase case 2`);
         // console.log(`erase interval: ${new Date(interval.startTime).toUTCString()},${new Date(interval.endTime).toUTCString()}`);
         this.intervalsMap.delete(interval.startTime);
       }
       // cuts through the middle of the interval
-      if ((interval.startTime < from && from < interval.endTime) && (interval.startTime < to && to < interval.endTime)){
+      if ((interval.startTime < from && from < interval.endTime) && (interval.startTime < to && to < interval.endTime)) {
         // console.log(`erase case 3`);
         // console.log(`erase interval: ${new Date(interval.startTime).toUTCString()},${new Date(interval.endTime).toUTCString()}`);
         this.intervalsMap.delete(interval.startTime);
         const leftNewInterval: Interval = {
           startTime: interval.startTime,
           endTime: from,
-          activityName: interval.activityName
+          activityId: interval.activityId
         };
         const rightNewInterval: Interval = {
           startTime: to,
           endTime: interval.endTime,
-          activityName: interval.activityName
+          activityId: interval.activityId
         };
         this.intervalsMap.set(leftNewInterval.startTime, leftNewInterval);
         this.intervalsMap.set(rightNewInterval.startTime, rightNewInterval);
@@ -178,22 +187,23 @@ export class TimelineService {
         const newInterval: Interval = {
           startTime: to,
           endTime: interval.endTime,
-          activityName: interval.activityName
+          activityId: interval.activityId
         };
         this.intervalsMap.set(newInterval.startTime, newInterval);
       }
       // overlaps the end of the interval
-      if ((interval.startTime < from && from < interval.endTime) && (interval.endTime <= to)){
+      if ((interval.startTime < from && from < interval.endTime) && (interval.endTime <= to)) {
         // console.log(`erase case 5`);
         this.intervalsMap.delete(interval.startTime);
         const newInterval: Interval = {
           startTime: interval.startTime,
           endTime: from,
-          activityName: interval.activityName
+          activityId: interval.activityId
         };
         this.intervalsMap.set(newInterval.startTime, newInterval);
       }
     }
+
     // console.log('intervals after erase:');
     // console.log(this.getIntervals());
   }
@@ -202,8 +212,10 @@ export class TimelineService {
     // console.log('intervals before addition:');
     // console.log(this.getIntervals());
 
+    this.createRestorePoint();
+
     // Two intervals can't have the same start time, so lets just keep them mutually exclusive
-    this.eraseIntervals(interval.startTime, interval.endTime);
+    this.eraseIntervals(interval.startTime, interval.endTime, false);
 
     this.intervalsMap.set(interval.startTime, interval);
     // console.log(`add interval: ${interval.activity.name},${new Date(interval.startTime).toUTCString()},${new Date(interval.endTime).toUTCString()}`);
@@ -211,21 +223,53 @@ export class TimelineService {
     // console.log(this.getIntervals());
   }
 
-  createRestorePoint(){
-
+  createRestorePoint(): void {
+    if (this.restorePoints.length >= 10){
+      this.restorePoints.shift();
+    }
+    // console.log('restore points before push:');
+    // console.log(this.restorePoints);
+    // console.log('creating restore point:');
+    // console.log({
+    //   activities: this.activities,
+    //   intervals: this.getIntervals(null, null, false)
+    // });
+    this.restorePoints.push({
+      activities: this.activities,
+      intervals: this.getIntervals(null, null, false)
+    });
+    // console.log('restore points after push:');
+    // console.log(this.restorePoints);
   }
 
-  undo(){
-
-  }
-
-  redo(){
-
+  undo(): void {
+    // console.log('restore points before undo:');
+    // console.log(this.restorePoints);
+    if (this.restorePoints.length === 0){
+      return;
+    }
+    const newState = this.restorePoints.pop();
+    console.log('newState:');
+    console.log(newState);
+    console.log('before undo:');
+    console.log(this.activities);
+    console.log(this.getIntervals());
+    this.activities = newState.activities;
+    const newIntervalsMap = new BinMap<number, Interval>();
+    for (const interval of newState.intervals) {
+      newIntervalsMap.set(interval.startTime, interval);
+    }
+    this.intervalsMap = newIntervalsMap;
+    console.log('after undo:');
+    console.log(this.activities);
+    console.log(this.getIntervals());
   }
 
 }
 
+
 export interface Activity {
+  id: number;
   name: string;
   color: string;
 }
@@ -233,5 +277,5 @@ export interface Activity {
 export interface Interval {
   startTime: number;
   endTime: number;
-  activityName: string;
+  activityId: number;
 }

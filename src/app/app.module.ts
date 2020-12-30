@@ -10,6 +10,7 @@ import { AppComponent } from './app.component';
 import { HomeComponent } from './home/home.component';
 import { TimePipe } from './time.pipe';
 import { TimelineComponent } from './timeline/timeline.component';
+import {FormsModule} from '@angular/forms';
 
 export function playerFactory(): any {
   return player;
@@ -22,12 +23,13 @@ export function playerFactory(): any {
     TimePipe,
     TimelineComponent
   ],
-  imports: [
-    BrowserModule,
-    AppRoutingModule,
-    BrowserAnimationsModule,
-    LottieModule.forRoot({ player: playerFactory } )
-  ],
+    imports: [
+        BrowserModule,
+        AppRoutingModule,
+        BrowserAnimationsModule,
+        LottieModule.forRoot({player: playerFactory}),
+        FormsModule
+    ],
   providers: [],
   bootstrap: [AppComponent]
 })

@@ -10,19 +10,19 @@ export class TimelineComponent implements OnInit, OnChanges {
   @Input() startTime: number;
   @Input() endTime: number;
   @Input()
-  get editMode(): boolean {return this._editMode; }
   set editMode(editMode: boolean){
     this._editMode = editMode;
     this.selectionStarted = false;
   }
+  get editMode(): boolean {return this._editMode; }
   // tslint:disable-next-line:variable-name
   private _editMode = false;
   @Input()
-  get editActivity(): Activity {return this._editActivity}
   set editActivity(editActivity: Activity){
     this._editActivity = editActivity;
     this.selectionStarted = false;
   }
+  get editActivity(): Activity {return this._editActivity; }
   // tslint:disable-next-line:variable-name
   private _editActivity: Activity = null;
 
@@ -149,7 +149,7 @@ export class TimelineComponent implements OnInit, OnChanges {
 
   private drawFill(): void {
     for (const interval of this.intervals){
-      this.ctx.fillStyle = this.timelineService.getActivityColor(interval.activityName);
+      this.ctx.fillStyle = this.timelineService.getActivity(interval.activityId).color;
       const intervalPixelStart = this.timeToPixel(interval.startTime);
       const intervalPixelEnd = this.timeToPixel(interval.endTime ? interval.endTime : Date.now());
       this.ctx.fillRect(
@@ -249,7 +249,7 @@ export class TimelineComponent implements OnInit, OnChanges {
           this.timelineService.eraseIntervals(selectionTimeLeft, selectionTimeRight);
         }else{
           this.timelineService.addInterval(
-            {startTime: selectionTimeLeft, endTime: selectionTimeRight, activityName: this._editActivity.name}
+            {startTime: selectionTimeLeft, endTime: selectionTimeRight, activityId: this._editActivity.id}
             );
         }
         this.selectionStarted = false;
