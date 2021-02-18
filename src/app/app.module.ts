@@ -11,6 +11,8 @@ import { HomeComponent } from './home/home.component';
 import { TimePipe } from './time.pipe';
 import { TimelineComponent } from './timeline/timeline.component';
 import {FormsModule} from '@angular/forms';
+import { ActivityWidgetComponent } from './activity-widget/activity-widget.component';
+import { ActivityHistoryGraphComponent } from './activity-history-graph/activity-history-graph.component';
 
 export function playerFactory(): any {
   return player;
@@ -21,7 +23,9 @@ export function playerFactory(): any {
     AppComponent,
     HomeComponent,
     TimePipe,
-    TimelineComponent
+    TimelineComponent,
+    ActivityWidgetComponent,
+    ActivityHistoryGraphComponent
   ],
     imports: [
         BrowserModule,

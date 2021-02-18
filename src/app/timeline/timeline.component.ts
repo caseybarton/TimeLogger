@@ -17,6 +17,7 @@ export class TimelineComponent implements OnInit, OnChanges {
   get editMode(): boolean {return this._editMode; }
   // tslint:disable-next-line:variable-name
   private _editMode = false;
+
   @Input()
   set editActivity(editActivity: Activity){
     this._editActivity = editActivity;
@@ -28,28 +29,13 @@ export class TimelineComponent implements OnInit, OnChanges {
 
   private displayedStartTime: number;
   private displayedEndTime: number;
-  private transitionAnimationDuration = 500;
   private currentlyAnimating = false;
   private selectionStarted = false;
   private selectionStartTime = 0;
-
   private cvs: HTMLCanvasElement;
   private ctx: CanvasRenderingContext2D;
 
-  private majorLineColor = '#00000088';
-  private midLineColor = '#00000088';
-  private minorLineColor = '#00000088';
-  private textColor = '#000000CC';
-  private selectionColor = '#00000033';
-
-  private majorLineThickness = 2;
-  private majorLineLength = 0.35; // ratio of y dimension
-  private midLineThickness = 2;
-  private midLineLength = 0.29; // ratio of y dimension
-  private minorLineThickness = 2;
-  private minorLineLength = 0.2; // ratio of y dimension
-  private font = '14px sans-serif';
-
+  // initialized by updateInfo()
   private timeRangeStart: number;
   private timeRangeEnd: number;
   private intervals: Array<Interval>;
@@ -57,6 +43,21 @@ export class TimelineComponent implements OnInit, OnChanges {
   private canvasHeight: number;
   private pixelStart: number;
   private pixelEnd: number;
+
+  // styling parameters
+  private transitionAnimationDuration = 500; // when a new date is selected
+  private majorLineColor = '#00000088';
+  private midLineColor = '#00000088';
+  private minorLineColor = '#00000088';
+  private textColor = '#000000CC';
+  private selectionColor = '#00000033';
+  private majorLineThickness = 2;
+  private majorLineLength = 0.35; // ratio of y dimension
+  private midLineThickness = 2;
+  private midLineLength = 0.29; // ratio of y dimension
+  private minorLineThickness = 2;
+  private minorLineLength = 0.2; // ratio of y dimension
+  private font = '14px sans-serif';
 
   constructor(private timelineService: TimelineService) {}
 
@@ -79,23 +80,24 @@ export class TimelineComponent implements OnInit, OnChanges {
   }
 
   private animateTransition(): void {
-    // animate the transition to the new displayed time
+    // animate the transition to the new displayed time bounds
     const prevLeftBound = this.displayedStartTime;
     const prevRightBound = this.displayedEndTime;
     const newLeftBound = this.startTime;
     const newRightBound = this.endTime;
     const animationStartTime = Date.now();
     const animationEndTime = animationStartTime + this.transitionAnimationDuration;
-    const nextAnimationFrame = unBoundNextAnimationFrame.bind(this);
+
     this.currentlyAnimating = true;
-    function unBoundNextAnimationFrame(): void {
+
+    const nextAnimationFrame = unboundNextAnimationFrame.bind(this);
+    function unboundNextAnimationFrame(): void {
       const currentTime = Date.now();
       const leftBoundDifference = newLeftBound - prevLeftBound;
       const rightBoundDifference = newRightBound - prevRightBound;
       const progressRatio = (currentTime - animationStartTime) / (animationEndTime - animationStartTime);
       function easeInOutQuad(x: number): number {
         return x < 0.5 ? 2 * x * x : 1 - Math.pow(-2 * x + 2, 2) / 2;
-
       }
       this.displayedStartTime = leftBoundDifference * easeInOutQuad(progressRatio) + prevLeftBound;
       this.displayedEndTime = rightBoundDifference * easeInOutQuad(progressRatio) + prevRightBound;
@@ -278,6 +280,7 @@ export class TimelineComponent implements OnInit, OnChanges {
   }
 
   public redraw(event = null): void {
+    console.log('timeline redrawn');
     this.updateInfo();
     this.clear();
     this.drawFill();

@@ -16,35 +16,6 @@
   <div id="next-day-button" title="Next Day" (click)="onNextDayButtonClicked($event)">
     <img src="../../assets/img/wide-arrow.svg" style="filter: invert(100%); max-width: 100%"/>
   </div>
-<app-timeline id="timeline" [startTime]="timelineRangeStart" [endTime]="timelineRangeEnd" [editMode]="timelineEditMode" [editActivity]="timelineEditActivity">
-</app-timeline>
+  <app-timeline id="timeline" [startTime]="timelineRangeStart" [endTime]="timelineRangeEnd" [editMode]="timelineEditMode" [editActivity]="timelineEditActivity"></app-timeline>
 </div>
-<div *ngFor="let activity of getActivities()" class="activity-widget" [ngStyle]="{'background':'linear-gradient('+activity.color+','+activity.color+'),linear-gradient(white,white)'}">
-  <div class="activity-menu">
-    <input class="activity-name" type="text" [(ngModel)]="activity.name">
-    <div class="activity-timer">{{getActivityTime(activity) | time}}</div>
-    <div class="activity-buttons">
-      <div class="activity-buttons-left-fill"></div>
-      <div title="Start/Stop Timer" (click)="onStartStopButtonClicked(activity, $event)" class="start-stop-button">
-        <img [src]='this.timelineService.getActiveActivity() === activity ? "../../assets/img/pause.svg" : "../../assets/img/play.svg"' style="filter: invert(100%); max-width: 100%;">
-      </div>
-      <div class="activity-buttons-right-container">
-        <div class="draw-button" title="Draw" (click)="onDrawButtonClicked(activity)">
-          <img src="../../assets/img/draw.svg" style="filter: invert(100%); max-width: 100%"/>
-        </div>
-        <div class="metrics-button" title="History">
-          <img src="../../assets/img/graph.svg" style="filter: invert(100%); max-width: 100%"/>
-        </div>
-        <div class="options-button" title="Options">
-          <img src="../../assets/img/options.svg" style="filter: invert(100%); max-width: 100%"/>
-        </div>
-      </div>
-    </div>
-  </div>
-  <div class="activity-history" [@openCloseHistory]="isOpen ? 'open' : 'closed'">
-    history
-  </div>
-  <div class="activity-options" [@openCloseOptions]="isOpen ? 'open' : 'closed'">
-    options
-  </div>
-</div>
+<app-activity-widget *ngFor="let activity of getActivities()" [activity]="activity" (startStopButtonClickedEvent)="onStartStopButtonClicked($event)" (drawButtonClickedEvent)="onDrawButtonClicked($event)"></app-activity-widget>

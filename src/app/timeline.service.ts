@@ -123,7 +123,7 @@ export class TimelineService {
   }
 
   /**
-   * Returns the total time of all intervals in an array. Includes the current active interval.
+   * Returns the total time of all intervals in an array.
    */
   getIntervalsSum(intervals: Array<Interval>): number {
     let sum = 0;

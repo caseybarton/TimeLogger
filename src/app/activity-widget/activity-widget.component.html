@@ -1,0 +1,29 @@
+<div class="activity-widget" [ngStyle]="{'background':'linear-gradient('+activity.color+','+activity.color+'),linear-gradient(white,white)'}">
+  <div class="activity-menu">
+    <input class="activity-name" type="text" [(ngModel)]="activity.name">
+    <div class="activity-timer">{{getActivityTime(activity) | time}}</div>
+    <div class="activity-buttons">
+      <div class="activity-buttons-left-fill"></div>
+      <div title="Start/Stop Timer" (click)="startStopButtonClicked()" class="start-stop-button">
+        <img [src]='this.timelineService.getActiveActivity() === activity ? "../../assets/img/pause.svg" : "../../assets/img/play.svg"' style="filter: invert(100%); max-width: 100%;">
+      </div>
+      <div class="activity-buttons-right-container">
+        <div class="draw-button" title="Draw" (click)="drawButtonClicked()">
+          <img src="../../assets/img/draw.svg" style="filter: invert(100%); max-width: 100%"/>
+        </div>
+        <div class="metrics-button" title="History" (click)="historyButtonClicked()">
+          <img src="../../assets/img/graph.svg" style="filter: invert(100%); max-width: 100%"/>
+        </div>
+        <div class="options-button" title="Options" (click)="optionsButtonClicked()">
+          <img src="../../assets/img/options.svg" style="filter: invert(100%); max-width: 100%"/>
+        </div>
+      </div>
+    </div>
+  </div>
+  <app-activity-history-graph class="activity-history" [activity]="this.activity" [@openCloseHistory]="historyIsOpen ? 'open' : 'closed'">
+
+  </app-activity-history-graph>
+  <div class="activity-options" [@openCloseOptions]="optionsIsOpen ? 'open' : 'closed'">
+    options
+  </div>
+</div>

@@ -1,6 +1,5 @@
 @import "src/assets/variables.scss";
 
-
 #timeline{
   height: 80px;
   width: 100%;
@@ -19,7 +18,7 @@
 .timeline-label-date{
   font-weight: bold;
   font-size: 25px;
-  align-self: end;
+  align-self: flex-end;
 }
 
 .timeline-label-button-container{
@@ -49,117 +48,6 @@
   height: 40px;
 }
 
-.activity-widget{
-  margin-top: 20px;
-  padding: 0 20px;
-  box-shadow: 3px 3px 6px 0px #0002;
-  border-radius: 10px;
-}
-
-.activity-menu{
-  height: 80px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: mediumpurple;
-}
-
-.activity-history{
-  height: 200px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: purple;
-}
-
-.activity-options{
-  height: 120px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  background-color: rebeccapurple;
-}
-
-.activity-name{
-  width: 40%;
-  font-weight: bold;
-  font-size: 30px;
-  background-color: #00000000;
-  border:unset;
-  color:white;
-}
-
-.activity-name::placeholder{
-  color:white;
-}
-
-.activity-timer{
-  min-width: 260px;
-  font-weight: bold;
-  font-size: 40px;
-  text-align: center;
-}
-
-.activity-buttons{
-  width: 40%;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.activity-buttons-left-fill{
-  width: 1px;
-}
-
-.start-stop-button{
-  width: 60px;
-  height: 60px;
-  padding: 5px;
-  border-radius: 5px;
-  &:hover {
-    background-color: $button-hover-color;
-  }
-  &:active {
-    background-color: $button-active-color;
-    transform: scale(0.95);
-  }
-}
-
-.start-stop-button>img{
-  width: 50px;
-  height: 50px;
-}
-
-.activity-buttons-right-container{
-  width: 150px;
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.activity-buttons-right-container>div{
-  padding: 5px;
-  width: 50px;
-  height: 50px;
-  border-radius: 5px;
-  &:hover {
-    background-color: $button-hover-color;
-  }
-  &:active {
-    background-color: $button-active-color;
-    transform: scale(0.95);
-  }
-}
-
-.activity-buttons-right-container>div>img{
-  width: 40px;
-  height: 40px;
-}
 
 #timeline-container{
 
