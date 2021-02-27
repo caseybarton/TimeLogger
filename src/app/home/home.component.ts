@@ -24,7 +24,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
   public timelineEditActivity: Activity = null;
   private timelineRedrawInterval: Subscription;
 
-
   @ViewChild(TimelineComponent)
   private timelineComponent: TimelineComponent;
 
@@ -35,7 +34,7 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
     startTime.setHours(0, 0, 0);
     this.timelineRangeStart = startTime.getTime();
     this.timelineRangeEnd = this.timelineRangeStart + 24 * 60 * 60 * 1000;
-    this.timelineRedrawInterval = interval(1000).subscribe((n) => this.redrawTimeline); // this line doesnt work
+    this.timelineRedrawInterval = interval(1000).subscribe((n) => this.redrawTimeline());
     this.dateStr = new Intl.DateTimeFormat('en-US', {year: 'numeric', month: 'long', day: 'numeric'})
       .format(new Date(this.timelineRangeStart));
 
@@ -44,8 +43,6 @@ export class HomeComponent implements OnInit, AfterViewInit, OnDestroy {
       window.requestAnimationFrame(triggerChangeDetection);
     }
     window.requestAnimationFrame(triggerChangeDetection);
-
-    // setInterval(() => {console.log('activity id:0 :'); console.log(this.timelineService.getActivity(0).name), 1000});
   }
 
   ngAfterViewInit(): void {

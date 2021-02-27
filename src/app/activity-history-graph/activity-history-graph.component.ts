@@ -31,7 +31,6 @@ export class ActivityHistoryGraphComponent implements OnInit, OnDestroy {
 
   @ViewChild('canvas')
   set canvas(elementRef: ElementRef){
-    console.log(elementRef.nativeElement);
     this.cvs = elementRef.nativeElement;
     this.ctx = this.cvs.getContext('2d');
     const dpr: number = window.devicePixelRatio;
@@ -42,13 +41,12 @@ export class ActivityHistoryGraphComponent implements OnInit, OnDestroy {
     this.cvs.setAttribute('height', (200 * dpr).toString());
     this.redraw();
     window.addEventListener('resize', _ => this.redraw());
-
+    this.redrawInterval = interval(1000).subscribe(_ => this.redraw());
   }
 
   constructor(private timelineService: TimelineService) { }
 
   ngOnInit(): void {
-    this.redrawInterval = interval(1000).subscribe(this.redraw);
   }
 
   ngOnDestroy(): void {
@@ -151,9 +149,8 @@ export class ActivityHistoryGraphComponent implements OnInit, OnDestroy {
     this.ctx.fillText(maxQuantityLabel, axisLeft - 6, axisTop + 5);
     this.ctx.fillText(halfMaxQuantityLabel, axisLeft - 6,  (axisBottom - axisTop) / 2 + axisTop + 5);
 
-    console.log('history graph redrawn');
 
-
+    // console.log('history graph redrawn');
   }
 
 }

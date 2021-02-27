@@ -280,7 +280,7 @@ export class TimelineComponent implements OnInit, OnChanges {
   }
 
   public redraw(event = null): void {
-    console.log('timeline redrawn');
+    // console.log('timeline redrawn');
     this.updateInfo();
     this.clear();
     this.drawFill();
